@@ -41,7 +41,7 @@ mouseY = percentY * movRange;
 })
 
 
-const r = 0.15
+const r = 0.3
 const points = [
     //triangle 1
     [-r, r, 0],
@@ -82,6 +82,7 @@ var attributes = {
     aUV: regl.buffer(uvs)
 }
 
+/////////////////////////////
 var vertexShader = `
 precision mediump float;
 attribute vec3 position;
@@ -114,19 +115,25 @@ void main() {
     vUV = aUV;
 }`
 
+//////////////////////////
+
 var fragShader = `
 precision mediump float;
 varying vec3 vColor;
 varying vec2 vUV;
 
+uniform vec3 uTranslate;
 void main(){
     vec2 center = vec2(0.5, 0.5);
+
     float d = distance(vUV, center);
 
-    float gradient = smoothstep(0.4, 0.5, d);
+    vec3 colorBg = vec3(1.0, 1.0, 1.0);
+    vec3 colorDot = vec3(0.4, 0.5, 0.6);
 
-    vec3 color = vec3(gradient);
-    gl_FragColor = vec4(color, 1.0);
+    //float gradient = smoothstep(0.4, 0.5, d);
+
+    gl_FragColor = vec4((uTranslate/5.0)* .5 + .5, 1.0);
 }`
 
 console.log('Attributes:', attributes)
@@ -170,10 +177,12 @@ const clear = () => {
 function render(){
 
     currTime += 0.01
-    let cameraX = Math.sin(currTime);
-    let cameraZ = Math.cos(currTime);
 
-    mat4.lookAt(viewMatrix, [mouseX, mouseY, 10], [0, 0, 0], [0, 1, 0]); // to move the camera
+    var cameraRad = 10.0;
+    var cameraX = Math.sin(currTime)*cameraRad;
+    var cameraY = Math.cos(currTime)*cameraRad;
+
+    mat4.lookAt(viewMatrix, [cameraX, cameraY, 10], [0, 0, 0], [0, 1, 0]); // to move the camera
 
     //console.log('Time :', currTime)
     //console.log('render')
