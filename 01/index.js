@@ -41,7 +41,7 @@ mouseY = percentY * movRange;
 })
 
 
-const r = 0.8
+const r = 0.15
 const points = [
     //triangle 1
     [-r, r, 0],
@@ -64,17 +64,29 @@ var colors = [
     [0.4, 0.8, 0.5]
 
 ]
+
+var uvs = [
+    [0, 0],
+    [1, 0],
+    [1, 1],
+
+    [0, 0],
+    [0, 1],
+    [1, 1],
+]
 //buffer is a big array combined into a single line, the following code defines the buffer using regl
 
 var attributes = {
     position: regl.buffer(points),
-    aColor: regl.buffer(colors)
+    aColor: regl.buffer(colors),
+    aUV: regl.buffer(uvs)
 }
 
 var vertexShader = `
 precision mediump float;
 attribute vec3 position;
 attribute vec3 aColor;
+attribute vec2 aUV;
 
 uniform float uTime;
 uniform mat4 uProjectionMatrix;
@@ -83,6 +95,7 @@ uniform mat4 uViewMatrix;
 uniform vec3 uTranslate;
 
 varying vec3 vColor;
+varying vec2 vUV;
 
 void main() {
     //create holder for position
@@ -98,17 +111,23 @@ void main() {
 
     gl_Position = uProjectionMatrix * uViewMatrix * vec4(pos, 1.0);
     vColor = aColor;
+    vUV = aUV;
 }`
 
 var fragShader = `
 precision mediump float;
-
 varying vec3 vColor;
+varying vec2 vUV;
 
 void main(){
-    gl_FragColor = vec4(vColor, 1.0);
-}
-`
+    vec2 center = vec2(0.5, 0.5);
+    float d = distance(vUV, center);
+
+    float gradient = smoothstep(0.4, 0.5, d);
+
+    vec3 color = vec3(gradient);
+    gl_FragColor = vec4(color, 1.0);
+}`
 
 console.log('Attributes:', attributes)
 
@@ -120,9 +139,23 @@ uniforms: {
     uTranslate: regl.prop('translate')
 },
 
-    attributes: attributes,
     frag: fragShader,
     vert: vertexShader,
+    attributes: attributes,
+
+    depth:{
+        enable: false
+},
+
+ blend: {
+      enable: true,
+      func: {
+        srcRGB: 'src alpha',
+        srcAlpha: 'src alpha',
+        dstRGB: 'one minus src alpha',
+        dstAlpha: 'one minus src alpha',
+      },
+    },
     count: 6
 })
 
@@ -130,7 +163,7 @@ uniforms: {
 
 const clear = () => {
     regl.clear({
-        color: [0, 0, 0, 1]
+        color: [0, 0, 0, 0]
     })
 }
 
@@ -147,13 +180,16 @@ function render(){
     clear() //clearing the background each frame
 
     for (var i = 0; i < 5; i++){
+        for (var j = 0; j < 5; j++){
+            for (var k = 0; k < 5; k++) {
         var obj = {
             time: currTime,
             view: viewMatrix,
-            translate: [i * (Math.sin(currTime) * 2), 0, 0]
-
+            translate: [i * (Math.cos(currTime) * 1), j * (Math.sin(currTime) * 1), k * (Math.sin(currTime) * 1)]
+            }
+            drawTriangles(obj)
+            }
         }
-         drawTriangles(obj)
     }
 
 
