@@ -1,132 +1,94 @@
 const regl = require('regl')()
+const strVert = require('./shaders/shaderVertex.js');
+const strFrag = require('./shaders/shaderFrag.js');
+const loadObj = require('./utils/loadObj.js')
 
 const glm = require('gl-matrix')
-var mat4 = glm.mat4;
-var projectionMatrix = mat4.create();
-var fov = 45 * Math.PI/180;
-var aspect = window.innerWidth / window.innerHeight;
-var near = 0.01;
-var far = 1000.0
+var mat4 = glm.mat4
 
-
-mat4.perspective(projectionMatrix, fov, aspect, near, far); //perspective(out, fovy, aspect, near, far)
+var projectionMatrix = mat4.create()
+var fov = 75 * Math.PI / 180
+var aspect = window.innerWidth / window.innerHeight
+mat4.perspective(projectionMatrix, fov, aspect, 0.01, 1000.0)
 
 var viewMatrix = mat4.create()
-mat4.lookAt(viewMatrix, [0, 0, 2], [0, 0, 0], [0, 1, 0]); //lookAt(out, eye, center, up)
+mat4.lookAt(viewMatrix, [0, 0, 100], [0, 0, 0], [0, 1, 0])
 
+var drawWheel
 
-console.log(projectionMatrix) //identity matrix
+var mouseX = 0; var mouseY = 0
+// camera control
+window.addEventListener('mousemove', function (e) {
+  var x = e.clientX / window.innerWidth
+  var y = e.clientY / window.innerHeight
+
+  var movingRange = 20.0
+  mouseX = -(x - 0.5) * movingRange
+  mouseY = (y) * movingRange
+})
+
+loadObj('./assets/stem.obj', function (obj) {
+  console.log(obj)
+  // create the attributes
+  var attributes = {
+    aPosition: regl.buffer(obj.positions),
+    aUV: regl.buffer(obj.uvs)
+  }
+  // create our draw call
+  drawWheel = regl({
+    uniforms: {
+      uTime: regl.prop('time'),
+      uProjectionMatrix: regl.prop('projection'),
+      uViewMatrix: regl.prop('view'),
+      uTranslate: regl.prop('translate'),
+      uColor: regl.prop('color')
+    },
+    vert: strVert,
+    frag: strFrag,
+    attributes: attributes,
+    count: obj.count
+  })
+})
 
 var currTime = 0
 
-const r = 0.15
-const points = [
-    //triangle 1
-    [-r, r, 0],
-    [r, r, 0],
-    [r, -r, 0],
-
-    //triangle 2
-    [-r, r, 0],
-    [-r, -r, 0],
-    [r, -r, 0]
-];
-
-var colors = [
-    [0.9, 0.5, 0.4],
-    [0, 0.8, 0.7],
-    [0.4, 0.8, 0.5],
-
-    [0.9, 0.5, 0.4],
-    [0, 0.8, 0.7],
-    [0.4, 0.8, 0.5]
-
-]
-//buffer is a big array combined into a single line, the following code defines the buffer using regl
-
-var attributes = {
-    position: regl.buffer(points),
-    aColor: regl.buffer(colors)
-}
-
-var vertexShader = `
-precision mediump float;
-attribute vec3 position;
-attribute vec3 aColor;
-
-uniform float uTime;
-uniform mat4 uProjectionMatrix;
-uniform mat4 uViewMatrix;
-
-varying vec3 vColor;
-
-void main() {
-    //create holder for position
-    vec3 pos = position;
-    // add the time to the 'x' only
-    //pos.x += uTime;
-
-    float movingRange = 0.2;
-    pos.x += sin(uTime) * movingRange;
-    //pos.y += cos(uTime) * movingRange;
-
-    //sin goes from -1 ~ 1
-
-    gl_Position = uProjectionMatrix * uViewMatrix * vec4(pos, 1.0);
-    vColor = aColor;
-}`
-
-var fragShader = `
-precision mediump float;
-
-varying vec3 vColor;
-
-void main(){
-    gl_FragColor = vec4(vColor, 1.0);
-}
-`
-
-console.log('Attributes:', attributes)
-
-const drawTriangles = regl({
-uniforms: {
-    uTime: regl.prop('time'),
-    uProjectionMatrix: projectionMatrix,
-    uViewMatrix: regl.prop('view')
-},
-
-    attributes: attributes,
-    frag: fragShader,
-    vert: vertexShader,
-    count: 6
-})
-
-
-
 const clear = () => {
-    regl.clear({
-        color: [0, 0, 0, 1]
-    })
+  regl.clear({
+    color: [0.8, 0.8, 0.8, 1]
+  })
 }
 
-function render(){
+var gap = 5
 
-    currTime += 0.01
-    let cameraX = Math.sin(currTime);
-    let cameraZ = Math.cos(currTime);
+function render () {
+  currTime += 0.01
 
-    mat4.lookAt(viewMatrix, [cameraX, 0, cameraZ], [0, 0, 0], [0, 1, 0]); // to move the camera
+  mat4.lookAt(viewMatrix, [mouseX, mouseY, 30], [0, 0, 0], [0, 1, 0])
+console.log(drawWheel)
+  clear()
+  if (drawWheel != undefined) {
+    var num = 20
+    const start = num / 2 * 2 - 1
 
-    var obj = {
-        time: currTime,
-        view: viewMatrix
+    for (var i = 0; i < num; i++) {
+      for (var j = 0; j < num; j++) {
+       // for (var k = 0; k < num; k++) {
+          // create object for uniforms
+          var obj = {
+            time: currTime,
+            projection: projectionMatrix,
+            view: viewMatrix,
+            translate: [-start + i * gap, -10, -start + j * gap],
+            color: [i / num, j / num, j / num]
+          }
+
+          drawWheel(obj)
+        //}
+      }
     }
+  }
 
-    //console.log('Time :', currTime)
-    console.log('render')
-    clear() //clearing the background each frame
-    drawTriangles(obj)
-    window.requestAnimationFrame(render) //this is to clear the screen which is especially useful for animation on the screen
+  window.requestAnimationFrame(render)
 }
 
 render()
