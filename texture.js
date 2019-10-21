@@ -72,7 +72,7 @@ const drawTriangle = regl({
       gl_FragColor = vec4(vUV, 0.0, 1.0);
       gl_FragColor = texture2D(texture, vUV);
     }`,
-
+    //uv location is the position of (0,0) to (1,1)
   vert: `
     precision mediump float;
     attribute vec3 position;
