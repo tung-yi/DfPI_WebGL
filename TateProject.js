@@ -13,8 +13,21 @@ var r = 0.5
 var num = 50
 var start = num / 2
 //define the points position
-//create 8 triangles to form the square
 
+
+// color palette
+
+
+var color1 = [0.415, 0.513, 0.447] //oitake -light green
+var color5 = [0.447, 0.388, 0.431] //hatobanezumi - dark purple gray
+var color2 = [0.607, 0.564, 0.760] //ouchi - purple 
+var color6 = [0.843, 0.725, 0.556] //tonoko - beige
+var color3 = [0.792, 0.678, 0.372] //karashi - yellow green
+var color7 = [0.529, 0.498, 0.423] //aku - gray brown
+var color4 = [0.858, 0.556, 0.443] //tokigaracha - muted salmon
+var color8 = [0.568, 0.705, 0.576] //usuao - mint green
+
+//create 8 triangles to form the square
 var points = [
   [-r, r, 0],
   [0, r, 0],
@@ -50,37 +63,37 @@ var points = [
 ]
 
 var triangleColours = [
-  [1, 0, 0],
-  [1, 0, 0],
-  [1, 0, 0],
+  color1,
+  color1,
+  color1,
 
-  [0, 1, 0],
-  [0, 1, 0],
-  [0, 1, 0],
+  color2,
+  color2,
+  color2,
 
-  [0, 0, 1],
-  [0, 0, 1],
-  [0, 0, 1],
+  color3,
+  color3,
+  color3,
 
-  [1, 0, 1],
-  [1, 0, 1],
-  [1, 0, 1],
+  color4,
+  color4,
+  color4,
 
-  [0, 1, 1],
-  [0, 1, 1],
-  [0, 1, 1],
+  color5,
+  color5,
+  color5,
 
-  [1, 1, 0],
-  [1, 1, 0],
-  [1, 1, 0],
+  color6,
+  color6,
+  color6,
 
-  [0.5, 0, 0],
-  [0.5, 0, 0],
-  [0.5, 0, 0],
+  color7,
+  color7,
+  color7,
 
-  [0, 0, 0],
-  [0, 0, 0],
-  [0, 0, 0],
+  color8,
+  color8,
+  color8
 ]
 
 var fragmentShader = `
