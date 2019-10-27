@@ -137,8 +137,16 @@ var drawTriangles = regl({
   count: 24
 })
 
-function render() {
+//this renders the following function everytime the frame is reloaded
+//the window will adjust to resizing
+//found on github: https://github.com/regl-project/regl
 
+regl.frame(({time}) => {
+  regl.clear({
+    color: [1, 1, 1, 1]
+  })
+
+  //drawing the grid out
   for (var i = 0; i < num; i++) {
     for (var j = 0; j < num; j++) {
       var obj = {
@@ -148,7 +156,4 @@ function render() {
       drawTriangles(obj)
     }
   }
-  window.requestAnimationFrame(render)
-}
-
-render()
+}) 
