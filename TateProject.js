@@ -17,15 +17,25 @@ var start = num / 2
 
 // color palette
 
+var color1 = [0.647, 0.627, 0.317] //hiwacha - light green
+var color2 = [0.317, 0.431, 0.254] //aoni - dark green
+var color3 = [1, 0.694, 0.105] //yamabuki - mustard yellow
+var color4 = [0.741, 0.752, 0.729] //shironezumi (grey green) alternative: umezome - light yellow (0.913, 0.639, 0.407)
+var color5 = [0.921, 0.478, 0.466] //jinzamomi - pink 
+var color6 = [0.941, 0.368, 0.109] // akabeni (red orange) (0.796, 0.250, 0.258 )alternative: ohni - orange ()
+var color7 = [0.545, 0.505, 0.764] //fuji - blue purple
+var color8 = [0.658, 0.286, 0.478] //umemurasaki - purple pink
 
-var color1 = [0.415, 0.513, 0.447] //oitake -light green
-var color5 = [0.447, 0.388, 0.431] //hatobanezumi - dark purple gray
-var color2 = [0.607, 0.564, 0.760] //ouchi - purple 
-var color6 = [0.843, 0.725, 0.556] //tonoko - beige
-var color3 = [0.792, 0.678, 0.372] //karashi - yellow green
-var color7 = [0.529, 0.498, 0.423] //aku - gray brown
-var color4 = [0.858, 0.556, 0.443] //tokigaracha - muted salmon
-var color8 = [0.568, 0.705, 0.576] //usuao - mint green
+
+
+// var color1 = [0.415, 0.513, 0.447] //oitake -light green
+// var color5 = [0.447, 0.388, 0.431] //hatobanezumi - dark purple gray
+// var color2 = [0.607, 0.564, 0.760] //ouchi - purple 
+// var color6 = [0.843, 0.725, 0.556] //tonoko - beige
+// var color3 = [0.792, 0.678, 0.372] //karashi - yellow green
+// var color7 = [0.529, 0.498, 0.423] //aku - gray brown
+// var color4 = [0.858, 0.556, 0.443] //tokigaracha - muted salmon
+// var color8 = [0.568, 0.705, 0.576] //usuao - mint green
 
 //create 8 triangles to form the square
 var points = [
